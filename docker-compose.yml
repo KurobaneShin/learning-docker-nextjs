@@ -1,0 +1,40 @@
+version: '3.3'
+
+volumes:
+  db:
+  storage:
+
+
+networks:
+  next-app-network:
+          name: 'next-app-network'
+
+services:
+  database:
+    image: postgres:14.2-alpine
+    container_name: next-app-database
+    volumes:
+      - db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "3009:5432"   
+    networks:
+      - next-app-network
+    restart: always
+  next-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: next-app
+    container_name: next-app
+    volumes:
+      - .:/home/node/app
+      - storage:/home/node/storage
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    networks:
+      - next-app-network
+    restart: always  
